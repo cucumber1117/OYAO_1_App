@@ -1,22 +1,23 @@
-const STORAGE_KEY = 'oyao_items_v1';
+import { useState } from 'react';
+import { loadItems, saveItems } from './storage';
 
-export function loadItems() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw);
-  } catch (e) {
-    console.warn('storage.loadItems error', e);
-    return [];
-  }
+function App() {
+  const [items, setItems] = useState(loadItems());
+
+  const addItem = () => {
+    const next = [...items, '新しい項目'];
+
+    setItems(next);
+    saveItems(next);
+  };
+
+  return (
+    <>
+      <button onClick={addItem}>追加</button>
+
+      {items.map((item, i) => (
+        <div key={i}>{item}</div>
+      ))}
+    </>
+  );
 }
-
-export function saveItems(items) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch (e) {
-    console.warn('storage.saveItems error', e);
-  }
-}
-
-export default { loadItems, saveItems };
