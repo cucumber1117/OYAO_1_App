@@ -1,18 +1,11 @@
-import { useState } from 'react';
 import './ItemEditor.css';
 
-export default function ItemEditor() {
-  const [items, setItems] = useState([]);
-
+export default function ItemEditor({ items = [], onAdd = () => {}, onDelete = () => {} }) {
   const addItem = () => {
     const text = prompt('項目名を入力');
-    if (!text) return;
+    if (!text?.trim()) return;
 
-    setItems([...items, text]);
-  };
-
-  const deleteItem = (index) => {
-    setItems(items.filter((_, i) => i !== index));
+    onAdd(text.trim());
   };
 
   return (
@@ -29,7 +22,7 @@ export default function ItemEditor() {
             {item}
             <button
               className="btn"
-              onClick={() => deleteItem(index)}
+              onClick={() => onDelete(index)}
             >
               削除
             </button>
