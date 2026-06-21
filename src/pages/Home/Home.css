@@ -1,0 +1,29 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.home__header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.home__main {
+  display: flex;
+  gap: 16px;
+  flex: 1 1 auto;
+}
+.home__panel {
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.home__panel--left { flex: 1; }
+.home__panel--center { flex: 1; }
+.home__panel--right { flex: 1; }
+
+@media (max-width: 768px) {
+  .home__main { flex-direction: column; }
+}

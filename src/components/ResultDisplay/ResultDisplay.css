@@ -1,0 +1,2 @@
+.result-display__title { margin: 0 0 8px 0; }
+.result-display__area { min-height: 48px; display:flex; align-items:center; justify-content:center; background:#f8fafc; border-radius:6px; padding:8px; }

@@ -1,0 +1,3 @@
+.roulette { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.roulette__wheel { width: 220px; height: 220px; border-radius: 50%; background: linear-gradient(135deg,#f3f4f6,#e5e7eb); display:flex; align-items:center; justify-content:center; }
+.btn { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
