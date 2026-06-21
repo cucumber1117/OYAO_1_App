@@ -1,12 +1,79 @@
 import './Roulette.css';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { buildWheelGradient, getResultRotation, spinResult } from '../../utils/rouletteLogic';
 
-export default function Roulette({ items = [], onSpin = () => {} }) {
-  return (
-    <div className="roulette">
-      <div className="roulette__wheel">ルーレット表示</div>
-      <button className="btn" onClick={() => onSpin()}>
-        回す
-      </button>
-    </div>
-  );
+const SPIN_DURATION = 3600;
+
+/*
+ * 使い方:
+ * <Roulette items={items} onResult={(result) => setResult(result)} />
+ * items が空の場合はボタンが無効になり、抽選結果は onResult(result) で親に渡します。
+ */
+export default function Roulette({ items = [], onResult = () => {}, onSpin = null }) {
+	const [isSpinning, setIsSpinning] = useState(false);
+	const [rotation, setRotation] = useState(0);
+	const [selectedIndex, setSelectedIndex] = useState(-1);
+	const finishTimerRef = useRef(null);
+	const wheelItems = useMemo(() => (Array.isArray(items) ? items : []), [items]);
+	const canSpin = wheelItems.length > 0 && !isSpinning;
+	const wheelGradient = useMemo(() => buildWheelGradient(wheelItems), [wheelItems]);
+
+	useEffect(() => {
+		return () => {
+			if (finishTimerRef.current) window.clearTimeout(finishTimerRef.current);
+		};
+	}, []);
+
+	const handleSpin = () => {
+		if (!canSpin) return;
+
+		const result = spinResult(wheelItems);
+		const nextRotation = getResultRotation(result.index, wheelItems, rotation);
+
+		setIsSpinning(true);
+		setSelectedIndex(-1);
+		setRotation(nextRotation);
+
+		finishTimerRef.current = window.setTimeout(() => {
+			setSelectedIndex(result.index);
+			setIsSpinning(false);
+			onResult(result.item);
+			if (typeof onSpin === 'function') onSpin(result.item);
+		}, SPIN_DURATION);
+	};
+
+	return (
+		<div className="roulette">
+			<div className="roulette__stage" aria-label="ルーレット">
+				<div className="roulette__pointer" aria-hidden="true" />
+				<div
+					className="roulette__wheel"
+					style={{
+						'--roulette-bg': wheelGradient,
+						'--rotation': `${rotation}deg`,
+						'--item-count': wheelItems.length,
+					}}
+				>
+					{wheelItems.length === 0 ? (
+						<span className="roulette__empty">項目がありません</span>
+					) : (
+						wheelItems.map((item, index) => (
+							<span
+								key={`${item}-${index}`}
+								className={`roulette__label${selectedIndex === index ? ' roulette__label--selected' : ''}`}
+								style={{ '--index': index }}
+							>
+								{item}
+							</span>
+						))
+					)}
+				</div>
+				<div className="roulette__center" aria-hidden="true" />
+			</div>
+
+			<button className="btn roulette__button" type="button" onClick={handleSpin} disabled={!canSpin}>
+				{isSpinning ? '回転中...' : '回す'}
+			</button>
+		</div>
+	);
 }
